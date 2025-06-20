@@ -34,14 +34,29 @@ def expense_summary():
     df = pd.read_csv(FILE_NAME)
     return df.groupby("Category")["Amount"].sum()
 
-# Streamlit UI
+def clear_all_expenses():
+    df = pd.DataFrame(columns=["Date", "Category", "Amount", "Description"])
+    df.to_csv(FILE_NAME, index=False)
+
+# ---------- Streamlit UI ----------
 st.set_page_config(page_title="Personal Expense Tracker", layout="centered")
 st.title("💰 Personal Expense Tracker")
 
 initialize_file()
 
+# Sidebar menu
 menu = st.sidebar.selectbox("Menu", ["Add Expense", "View All Expenses", "Filter by Category", "Expense Summary"])
 
+# Optional: Clear expenses section in sidebar
+st.sidebar.markdown("---")
+st.sidebar.markdown("🧹 **Danger Zone**")
+if st.sidebar.button("⚠️ Clear All Expenses"):
+    confirm = st.sidebar.checkbox("Yes, I'm sure")
+    if confirm:
+        clear_all_expenses()
+        st.sidebar.success("All expenses cleared successfully!")
+
+# Main features
 if menu == "Add Expense":
     st.subheader("➕ Add New Expense")
     date = st.date_input("Date")
@@ -78,4 +93,3 @@ elif menu == "Expense Summary":
         st.warning("No data to summarize.")
     else:
         st.bar_chart(summary)
-
