@@ -11,7 +11,6 @@ def initialize_file():
         df.to_csv(FILE_NAME, index=False)
 
 def add_expense(date, category, amount, description):
-    category = category.strip().lower().capitalize()
     new_expense = pd.DataFrame({
         "Date": [date],
         "Category": [category],
