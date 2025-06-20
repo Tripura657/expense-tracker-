@@ -11,6 +11,7 @@ def initialize_file():
         df.to_csv(FILE_NAME, index=False)
 
 def add_expense(date, category, amount, description):
+    category = category.strip().lower().capitalize()
     new_expense = pd.DataFrame({
         "Date": [date],
         "Category": [category],
@@ -88,8 +89,20 @@ elif menu == "Filter by Category":
 
 elif menu == "Expense Summary":
     st.subheader("📊 Expense Summary")
-    summary = expense_summary()
+
+    df = pd.read_csv(FILE_NAME)
+    df["Amount"] = pd.to_numeric(df["Amount"], errors="coerce")
+    df = df.dropna(subset=["Amount"])
+    df["Category"] = df["Category"].str.strip().str.capitalize()
+    summary = df.groupby("Category")["Amount"].sum()
+
     if summary.empty:
         st.warning("No data to summarize.")
     else:
-        st.bar_chart(summary)
+        fig, ax = plt.subplots()
+        ax.bar(summary.index, summary.values, color='skyblue')
+        ax.set_title("Expenses by Category", fontsize=14)
+        ax.set_ylabel("Total Amount")
+        ax.set_xlabel("Category")
+        plt.xticks(rotation=45)
+        st.pyplot(fig)
