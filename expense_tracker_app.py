@@ -30,9 +30,9 @@ def view_by_category(category):
     df = pd.read_csv(FILE_NAME)
     return df[df["Category"].str.lower() == category.lower()]
 
-def expense_summary():
+'''def expense_summary():
     df = pd.read_csv(FILE_NAME)
-    return df.groupby("Category")["Amount"].sum()
+    return df.groupby("Category")["Amount"].sum()'''
 
 def clear_all_expenses():
     df = pd.DataFrame(columns=["Date", "Category", "Amount", "Description"])
@@ -45,7 +45,8 @@ st.title("💰 Personal Expense Tracker")
 initialize_file()
 
 # Sidebar menu
-menu = st.sidebar.selectbox("Menu", ["Add Expense", "View All Expenses", "Filter by Category", "Expense Summary"])
+menu = st.sidebar.selectbox("Menu", ["Add Expense", "View All Expenses", "Filter by Category"])
+#, "Expense Summary"
 
 # Optional: Clear expenses section in sidebar
 st.sidebar.markdown("---")
@@ -86,10 +87,10 @@ elif menu == "Filter by Category":
         else:
             st.dataframe(result)
 
-elif menu == "Expense Summary":
+'''elif menu == "Expense Summary":
     st.subheader("📊 Expense Summary")
     summary = expense_summary()
     if summary.empty:
         st.warning("No data to summarize.")
     else:
-        st.bar_chart(summary)
+        st.bar_chart(summary)'''
