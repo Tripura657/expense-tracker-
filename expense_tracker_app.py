@@ -51,11 +51,16 @@ menu = st.sidebar.selectbox("Menu", ["Add Expense", "View All Expenses", "Filter
 # Optional: Clear expenses section in sidebar
 st.sidebar.markdown("---")
 st.sidebar.markdown("🧹 **Danger Zone**")
-if st.sidebar.button("⚠️ Clear All Expenses"):
-    confirm = st.sidebar.checkbox("Yes, I'm sure")
-    if confirm:
-        clear_all_expenses()
-        st.sidebar.success("All expenses cleared successfully!")
+
+with st.sidebar.expander("⚠️ Clear All Expenses", expanded=False):
+    confirm_clear = st.checkbox("Yes, I want to clear all data")
+    if st.button("Delete All Expenses", type="primary", help="Deletes all data permanently"):
+        if confirm_clear:
+            clear_all_expenses()
+            st.success("✅ All expenses cleared successfully!")
+        else:
+            st.warning("☑️ Please confirm by checking the box.")
+
 
 # Main features
 if menu == "Add Expense":
