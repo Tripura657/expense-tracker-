@@ -1,68 +1,36 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
-import os
 
-FILE_NAME = "expense_tracker.csv"
-
-def initialize_file():
-    if not os.path.exists(FILE_NAME):
-        df = pd.DataFrame(columns=["Date", "Category", "Amount", "Description"])
-        df.to_csv(FILE_NAME, index=False)
+# Initialize in-memory storage
+if "expenses" not in st.session_state:
+    st.session_state.expenses = pd.DataFrame(columns=["Date", "Category", "Amount", "Description"])
 
 def add_expense(date, category, amount, description):
-    new_expense = pd.DataFrame({
-        "Date": [date],
-        "Category": [category],
-        "Amount": [amount],
-        "Description": [description]
-    })
-
-    df = pd.read_csv(FILE_NAME)
-    df = pd.concat([df, new_expense], ignore_index=True)
-    df.to_csv(FILE_NAME, index=False)
-
-def view_expenses():
-    df = pd.read_csv(FILE_NAME)
-    return df
-
-def view_by_category(category):
-    df = pd.read_csv(FILE_NAME)
-    return df[df["Category"].str.lower() == category.lower()]
-
-#def expense_summary():
-#    df = pd.read_csv(FILE_NAME)
-#    return df.groupby("Category")["Amount"].sum()'''
+    new_row = {"Date": date, "Category": category, "Amount": amount, "Description": description}
+    st.session_state.expenses = pd.concat([st.session_state.expenses, pd.DataFrame([new_row])], ignore_index=True)
 
 def clear_all_expenses():
-    df = pd.DataFrame(columns=["Date", "Category", "Amount", "Description"])
-    df.to_csv(FILE_NAME, index=False)
+    st.session_state.expenses = pd.DataFrame(columns=["Date", "Category", "Amount", "Description"])
 
-# ---------- Streamlit UI ----------
-st.set_page_config(page_title="Personal Expense Tracker", layout="centered")
-st.title("💰 Personal Expense Tracker")
+def view_by_category(category):
+    return st.session_state.expenses[st.session_state.expenses["Category"].str.lower() == category.lower()]
 
-initialize_file()
+# UI
+st.set_page_config(page_title="Temporary Expense Tracker", layout="centered")
+st.title("💸 Temporary Expense Tracker")
 
-# Sidebar menu
 menu = st.sidebar.selectbox("Menu", ["Add Expense", "View All Expenses", "Filter by Category"])
-#, "Expense Summary"
 
-# Optional: Clear expenses section in sidebar
 st.sidebar.markdown("---")
-st.sidebar.markdown("🧹 **Danger Zone**")
-
-with st.sidebar.expander("⚠️ Clear All Expenses", expanded=False):
+with st.sidebar.expander("⚠️ Clear All Expenses"):
     confirm_clear = st.checkbox("Yes, I want to clear all data")
-    if st.button("Delete All Expenses", type="primary", help="Deletes all data permanently"):
+    if st.button("Delete All Expenses"):
         if confirm_clear:
             clear_all_expenses()
-            st.success("✅ All expenses cleared successfully!")
+            st.success("✅ All expenses cleared.")
         else:
             st.warning("☑️ Please confirm by checking the box.")
 
-
-# Main features
 if menu == "Add Expense":
     st.subheader("➕ Add New Expense")
     date = st.date_input("Date")
@@ -76,11 +44,10 @@ if menu == "Add Expense":
 
 elif menu == "View All Expenses":
     st.subheader("📋 All Expenses")
-    df = view_expenses()
-    if df.empty:
+    if st.session_state.expenses.empty:
         st.warning("No expenses recorded yet.")
     else:
-        st.dataframe(df)
+        st.dataframe(st.session_state.expenses)
 
 elif menu == "Filter by Category":
     st.subheader("🔍 Filter by Category")
@@ -91,11 +58,3 @@ elif menu == "Filter by Category":
             st.info("No records found.")
         else:
             st.dataframe(result)
-
-#elif menu == "Expense Summary":
-#    st.subheader("📊 Expense Summary")
-#    summary = expense_summary()
-#    if summary.empty:
-#        st.warning("No data to summarize.")
-#    else:
-#        st.bar_chart(summary)
