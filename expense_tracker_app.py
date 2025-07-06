@@ -16,7 +16,7 @@ def view_by_category(category):
     return st.session_state.expenses[st.session_state.expenses["Category"].str.lower() == category.lower()]
 
 # UI
-st.set_page_config(page_title="Temporary Expense Tracker", layout="centered")
+st.set_page_config(page_title="💰 Personal Expense Tracker", layout="centered")
 st.title("💰 Personal Expense Tracker")
 
 menu = st.sidebar.selectbox("Menu", ["Add Expense", "View All Expenses", "Filter by Category"])
