@@ -17,7 +17,7 @@ def view_by_category(category):
 
 # UI
 st.set_page_config(page_title="Temporary Expense Tracker", layout="centered")
-st.title("💸 Temporary Expense Tracker")
+st.title("💰 Personal Expense Tracker")
 
 menu = st.sidebar.selectbox("Menu", ["Add Expense", "View All Expenses", "Filter by Category"])
 
